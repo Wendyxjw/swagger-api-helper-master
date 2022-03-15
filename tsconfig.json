@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+        "target": "es5",
+        "module": "commonjs",
+        "lib": ["esnext", "es6", "es5", "dom", "scripthost"],
+        "declaration": true,
+        "sourceMap": true,
+        "outDir": "./lib",
+        "rootDir": "./src",
+        "downlevelIteration": true,
+        "strict": true,
+        "strictNullChecks": true,
+        "noImplicitThis": true,
+        "noUnusedLocals": true,
+        "moduleResolution": "node",
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true,
+        "experimentalDecorators": true
+    },
+    "exclude": ["lib", "__test__", "node_modules", "example", "server"]
+}
