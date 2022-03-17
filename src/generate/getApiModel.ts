@@ -25,14 +25,16 @@ export default (
     filename: string,
     {
         importExtraFetchOptions = () =>
-            `import { ${extraFetchOptionsInterfaceName} } from '@/types';`,
-        importRequest = () => `import request from '@/utils/request';`,
-        importStringify = () => `import stringify from '@/utils/stringify';`,
+            `import { ${extraFetchOptionsInterfaceName} } from '@utils/requestNew/types';`,
+        importRequest = () => `import request from '@utils/requestNew';`,
+        importStringify = () => `import { stringify } from 'qs'`,
         hasExtraFetchOptions = true,
         hasBasePath = true,
         renderFunction,
         extraImport,
-    }: Options
+        notRequiredInterfaces
+    }: Options,
+    dirname: string
 ): ApiModel => {
     const currentBasePath = hasBasePath ? basePath : '';
     let imports = [
@@ -128,6 +130,7 @@ ${items
                 queryType: parametersHasQuery ? interfaceNames.query : undefined,
                 paramsTypeMap: paramsTypeMap,
                 extraFetchOptionsParaName,
+                dirname
             },
             item
         ).trim();
@@ -291,7 +294,7 @@ ${description ? `@description ${description}` : ''}
                 type: Type.object,
             }
         );
-        const { content: result } = getInterface(schema, commentType, 1);
+        const { content: result } = getInterface(schema, commentType, 1, notRequiredInterfaces);
         if (!result) {
             return `\nexport type ${name} = any`;
         }

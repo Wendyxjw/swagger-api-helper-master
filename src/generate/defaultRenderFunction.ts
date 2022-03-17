@@ -14,6 +14,7 @@ export default ({
     queryType,
     paramsTypeMap,
     extraFetchOptionsParaName,
+    dirname
 }: RenderFunctionOptions): string => {
     const fullUrl = path.join(basePath, url);
     const paramsString = renderParams({
@@ -24,11 +25,11 @@ export default ({
         extraFetchOptionsParaName,
     });
     return `
-export async function ${name}(${renderArgs(payloadType)}) {${paramsString}
-  return request<${responseType}>(\`${fullUrl}${hasQuery ? '?${stringify(query)}' : ''}\`, {${
-    paramsString ? `\n\t\t...${extraFetchOptionsParaName},` : ''
-  }
-    method: '${method}',${hasBody ? '\n\t\tbody,' : ''}
+export function ${name}(${renderArgs(payloadType)}) {${paramsString}
+  return request<${responseType}>({
+    url: \`${dirname}${fullUrl}${hasQuery ? '?${stringify(query)}' : ''}\`,
+    method: '${method}',${hasBody ? '\n    data: body,' : ''}
+    ${paramsString ? `...${extraFetchOptionsParaName},` : ''}
   });
 }
 `;
@@ -69,7 +70,7 @@ function renderParams({
         ...(hasQuery ? ['query'] : []),
     ];
     const paramsString = `{ ${allPara.join(', ')}, ...${extraFetchOptionsParaName} }`;
-    return `\n\tconst ${
+    return `\n  const ${
         allPara.length === 0 ? extraFetchOptionsParaName : paramsString
     } = payload;`;
 }

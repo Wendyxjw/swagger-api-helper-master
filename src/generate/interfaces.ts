@@ -53,6 +53,8 @@ export interface Options {
      * @default () => `import { ExtraFetchOptions } from '@/types'`;
      */
     importExtraFetchOptions?: (path: string) => string;
+    // 非必填的字段
+    notRequiredInterfaces?: string[]
 }
 
 /**
@@ -85,6 +87,8 @@ export interface RenderFunctionOptions {
     hasParams: boolean;
     // 额外的属性参数名
     extraFetchOptionsParaName: string;
+    // 文件名
+    dirname: string
 }
 
 /**

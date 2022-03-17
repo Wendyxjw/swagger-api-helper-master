@@ -8,7 +8,7 @@ import { CommentType, InterfaceModel } from './interfaces';
  * @params definitions
  * @params includeInterfaceNames 需要生成的 interface 名称 includeInterfaceNames 接口关联的 其他接口也需要生成
  */
-export default (definitions: Definitions, includeInterfaceNames: string[]): string => {
+export default (definitions: Definitions, includeInterfaceNames: string[], notRequiredInterfaces?:string[]): string => {
     /**
      * 需要生成的 接口名称
      * 包括了
@@ -24,7 +24,7 @@ export default (definitions: Definitions, includeInterfaceNames: string[]): stri
             ...definitions[key],
             title: key,
         });
-        const interfaceModel = getInterface(definitions[key], CommentType.singleRight);
+        const interfaceModel = getInterface(definitions[key], CommentType.singleRight, 1, notRequiredInterfaces);
         interfaceModelByName.set(interfaceName, interfaceModel);
     });
     /**

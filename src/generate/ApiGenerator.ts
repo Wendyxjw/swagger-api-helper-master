@@ -47,7 +47,7 @@ class ApiGenerator {
      * 生成接口文件
      */
     async generate() {
-        const { tagAlias = {}, outputPath, include, exclude } = this.options;
+        const { tagAlias = {}, outputPath, include, exclude, notRequiredInterfaces} = this.options;
         const messages: GenMessageWrapper[] = [];
         let curIndex = 0;
         for await (const swaggerResponse of this.swaggerResponses) {
@@ -68,7 +68,8 @@ class ApiGenerator {
                         key,
                         basePath,
                         filename,
-                        this.options
+                        this.options,
+                        dirname
                     );
                     target.apiModelPromises.push(genFile(filename, content));
                     relatedInterfaceNames.forEach(name => target.globalInterfaceNamesSet.add(name));
@@ -82,7 +83,7 @@ class ApiGenerator {
             // swagger 所有的 定义的模型，生成到一个 interfaces 文件
             const interfaceModelsContent = getInterfacesModel(definitions, [
                 ...globalInterfaceNamesSet,
-            ]);
+            ], notRequiredInterfaces);
             const interfacesFilename = join(outputPath, `${dirname}/${interfaceModelsName}.ts`);
             const interfacesModelPromise = genFile(interfacesFilename, interfaceModelsContent);
 
