@@ -6,7 +6,7 @@ import { CommentType, InterfaceModel } from './interfaces';
 import renderComment from './renderComment';
 import { getRef } from '../utils';
 
-export default (schema: Schema, commentType: CommentType, level = 1): InterfaceModel => {
+export default (schema: Schema, commentType: CommentType, level = 1, notRequiredInterfaces?: string[]): InterfaceModel => {
     const relatedInterfaceNames = new Set<string>();
 
     /**
@@ -20,7 +20,8 @@ export default (schema: Schema, commentType: CommentType, level = 1): InterfaceM
             const tabs = new Array(level).fill('\t').join('');
             const items = Object.keys(model).map(key => {
                 const target = model[key];
-                const isRequired = Array.isArray(required) ? required.indexOf(key) > -1 : required;
+                let isRequired = Array.isArray(required) ? required.indexOf(key) > -1 : required;
+                isRequired = notRequiredInterfaces?.includes(key) ? false : isRequired;
                 const content = `${key}${isRequired ? '' : '?'}: ${loopInterface(
                     target,
                     commentType,
