@@ -10,6 +10,9 @@ export default (schema: Schema) => {
         targetName = ref.substr(ref.lastIndexOf('/') + 1);
         targetName = targetName.replace('models.', '');
     }
+    if(targetName.includes('Record')){
+        return targetName;
+    }
     return targetName.replace(/(«|»|,|\.|_|-)([a-zA-Z]?)/g, (searchValue, replaceValue) => {
         return searchValue.substring(1).toUpperCase();
     });

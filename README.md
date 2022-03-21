@@ -1,9 +1,9 @@
-# swagger-api-helper
+# swagger-api-helper-master
 
 ## install
 
 ```
-npm install swagger-api-helper --save-dev
+npm install swagger-api-helper-master --save-dev
 ```
 
 ## generate
@@ -11,7 +11,7 @@ npm install swagger-api-helper --save-dev
 ### 根据 swagger json 数据生成 typescript 类型支持的 接口 请求方法文件，包括了 后台定义的数据模型
 
 ```ts
-const { generate, ApiGenerator } = require('swagger-api-helper');
+const { generate, ApiGenerator } = require('swagger-api-helper-master');
 const path = require('path');
 
 const outputPath = path.join(__dirname, './services');
@@ -130,7 +130,7 @@ export interface Pet {
 #### express
 
 ```ts
-const { mock } = require('swagger-api-helper');
+const { mock } = require('swagger-api-helper-master');
 const app = express();
 const urls = ['https://petstore.swagger.io/v2/swagger.json'];
 mock(app, {
@@ -149,7 +149,7 @@ mock(app, {
 #### webpack
 
 ```ts
-const { mock } = require('swagger-api-helper');
+const { mock } = require('swagger-api-helper-master');
 devServer: {
     before: app => {
         mock(app, {

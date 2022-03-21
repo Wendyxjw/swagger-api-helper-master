@@ -1,3 +1,4 @@
+import getPureName from './generate/getPureName';
 import {
     SwaggerResponse,
     SwaggerModel,
@@ -6,6 +7,7 @@ import {
     In,
     Parameter,
     Path,
+    Type,
 } from './interfaces';
 
 /**
@@ -85,7 +87,21 @@ export default (data: SwaggerResponse) => {
         };
         return target;
     }, {});
-
+ 
+    // 处理definitions里面有问题的类型
+    Object.keys(definitions).forEach(i=>{
+        if(i.indexOf('Collection')===0){
+            
+            definitions[i]={
+                title:'' ,
+                items:{
+                    $ref: "#/definitions/" +  getPureName(i.split('Collection')[1]) ,
+                },
+                type:Type.array
+            }
+            console.log(definitions[i])
+        }
+    })
     return {
         swaggerObj,
         basePath,

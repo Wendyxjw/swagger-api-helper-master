@@ -24,6 +24,9 @@ export default ({
         paramsTypeMap,
         extraFetchOptionsParaName,
     });
+    // if(responseType==='MultiResponseGroupPortraitPageVO'){
+    //     console.log(responseType)
+    // }
     return `
 export function ${name}(${renderArgs(payloadType)}) {${paramsString}
   return request<${responseType}>({

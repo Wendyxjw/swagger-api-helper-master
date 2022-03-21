@@ -38,7 +38,6 @@ export default (schema: Schema, commentType: CommentType, level = 1, notRequired
         if (!type) {
             type = Type.object;
         }
-
         switch (type) {
             case Type.array:
                 if (getRef(items || {})) {

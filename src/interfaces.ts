@@ -37,8 +37,9 @@ export interface Properties {
 
 export interface Definition {
     type: Type;
-    title: string;
-    properties: Properties;
+    title?: string;
+    properties?: Properties;
+    items?: Record<string, any>
 }
 
 export type Methods = 'delete' | 'get' | 'post' | 'put';
