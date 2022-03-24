@@ -110,7 +110,6 @@ ${items
             },
             {}
         );
-
         const hasBody = parametersInBody.length > 0;
         const hasParams = parametersInPath.length > 0;
         const parametersHasQuery = parametersInQuery.length > 0;
