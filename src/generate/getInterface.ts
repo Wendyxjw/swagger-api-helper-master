@@ -17,7 +17,7 @@ export default (schema: Schema, commentType: CommentType, level = 1, notRequired
         const { properties, items, required } = schema;
         const getFullType = (model?: Properties): string => {
             if (!model) return 'any';
-            const tabs = new Array(level).fill('\t').join('');
+            const tabs = new Array(level).fill('  ').join('');
             const items = Object.keys(model).map(key => {
                 const target = model[key];
                 let isRequired = Array.isArray(required) ? required.indexOf(key) > -1 : required;
@@ -29,7 +29,7 @@ export default (schema: Schema, commentType: CommentType, level = 1, notRequired
                 )};`;
                 return `${renderContentWithDescription(target, content, commentType, tabs)}`;
             });
-            return `{\n${items.join('\n')}\n${new Array(level - 1).fill('\t').join('')}}`;
+            return `{\n${items.join('\n')}\n${new Array(level - 1).fill('  ').join('')}}`;
         };
         let type = schema.type;
         /**
@@ -55,6 +55,7 @@ export default (schema: Schema, commentType: CommentType, level = 1, notRequired
                 return getFullType(properties);
             case Type.string:
                 if (isEnum(schema)) return schema.enum!.map(item => `'${item}'`).join(' | ');
+            case Type.int:
             case Type.boolean:
             case Type.integer:
             case Type.file:

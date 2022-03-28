@@ -99,7 +99,7 @@ export default (data: SwaggerResponse) => {
                 },
                 type:Type.array
             }
-            console.log(definitions[i])
+            // console.log(definitions[i])
         }
     })
     return {

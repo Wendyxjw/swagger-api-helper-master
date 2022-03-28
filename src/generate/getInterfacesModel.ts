@@ -9,6 +9,7 @@ import { CommentType, InterfaceModel } from './interfaces';
  * @params includeInterfaceNames 需要生成的 interface 名称 includeInterfaceNames 接口关联的 其他接口也需要生成
  */
 export default (definitions: Definitions, includeInterfaceNames: string[], notRequiredInterfaces?:string[]): string => {
+    
     /**
      * 需要生成的 接口名称
      * 包括了
@@ -53,10 +54,9 @@ export default (definitions: Definitions, includeInterfaceNames: string[], notRe
             interfaceContents.push(
                 interfaceContent.trim().indexOf('{') === 0
                     ? `export interface ${interfaceName} ${interfaceContent}`
-                    : `export type ${interfaceName} = ${interfaceContent}`
+                    : `export type ${interfaceName} = ${interfaceContent};`
             );
         }
     });
-
     return interfaceContents.join('\n');
 };

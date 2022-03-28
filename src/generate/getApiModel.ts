@@ -1,7 +1,7 @@
 import { CustomPath, Type, Parameter, Response, Schema } from '../interfaces';
 import { firstCharUpper, getRef } from '../utils';
 import getInterface from './getInterface';
-import getRefModelTitle from './getRefModelTitle';
+import getRefModelTitle, { getSpecialTitle } from './getRefModelTitle';
 import { isEnum } from './isTypes';
 import typeMap from './typeMap';
 import {
@@ -27,14 +27,15 @@ export default (
         importExtraFetchOptions = () =>
             `import { ${extraFetchOptionsInterfaceName} } from '@utils/requestNew/types';`,
         importRequest = () => `import request from '@utils/requestNew';`,
-        importStringify = () => `import { stringify } from 'qs'`,
+        importStringify = () => `import { stringify } from 'qs';`,
         hasExtraFetchOptions = true,
         hasBasePath = true,
         renderFunction,
         extraImport,
         notRequiredInterfaces
     }: Options,
-    dirname: string
+    dirname: string,
+    allInterfaceName: string[]
 ): ApiModel => {
     const currentBasePath = hasBasePath ? basePath : '';
     let imports = [
@@ -164,14 +165,20 @@ ${description ? `@description ${description}` : ''}
      * @param {array} item
      */
     function renderPayloadInterface(items: PayloadContent[], interfaceName: string) {
-        return `export interface ${interfaceName} ${
-            hasExtraFetchOptions ? `extends ${extraFetchOptionsInterfaceName} ` : ''
-        }{\n${items
-            .map(item => {
-                const content = `${item.name}: ${item.typeName};`;
-                return renderComment(CommentType.multiline, item.description, content, '\t');
-            })
-            .join('\n')}\n}`;
+        if(items.length){
+            return `export interface ${interfaceName} ${
+                hasExtraFetchOptions ? `extends ${extraFetchOptionsInterfaceName} ` : ''
+            }{\n${items
+                .map(item => {
+                    const content = `${item.name}: ${item.typeName};`;
+                    return renderComment(CommentType.multiline, item.description, content, '  ');
+                })
+                .join('\n')}\n}`;
+        }
+        return `export type ${interfaceName} ${
+            hasExtraFetchOptions ? `= ${extraFetchOptionsInterfaceName}; ` : ''
+        }`;
+        
     }
 
     /**
@@ -207,18 +214,29 @@ ${description ? `@description ${description}` : ''}
         const getTypeName = (target: Response | Parameter) => {
             if (!target.schema) return;
             let typeName = '';
-            const addInterfaceName = (typeName: string, type: Type) => {
-                itemInterfaceNames.push(typeName);
+            const addInterfaceName = (typeName: string, type: Type, isInDefinitions:boolean) => {
+                isInDefinitions && itemInterfaceNames.push(typeName);
                 return type === 'array' ? `${typeName}[]` : typeName;
             };
             // 处理对象
             if (getRef(target.schema)) {
                 typeName = getRefModelTitle(target.schema);
-                typeName = addInterfaceName(typeName, target.schema.type!);
+                const isInDefinitions=allInterfaceName.includes(typeName);
+                if(!isInDefinitions){
+                    typeName= getSpecialTitle(target.schema);
+                }
+                typeName = addInterfaceName(typeName, target.schema.type!, isInDefinitions);
+                // console.log(typeName)
             } else if (target.schema.items && getRef(target.schema.items)) {
                 // 处理数组
                 typeName = getRefModelTitle(target.schema.items);
-                typeName = addInterfaceName(typeName, target.schema.type!);
+                const isInDefinitions=allInterfaceName.includes(typeName);
+                if(!isInDefinitions){
+                    typeName= getSpecialTitle(target.schema.items);
+                }else{
+                    
+                }
+                typeName = addInterfaceName(typeName, target.schema.type!, isInDefinitions);
             } else {
                 typeName = getType(target.schema.type!, target.schema.items);
             }

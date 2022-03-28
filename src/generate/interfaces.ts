@@ -1,16 +1,24 @@
 import { SwaggerFetchOptions, CustomPath } from '../interfaces';
-
+export type UrlConfig={
+    // 需要生成的接口(使用 tag 来匹配) 优先级大于 exclude
+    include?: string[];
+    // 不需要生成的接口(使用 tag 来匹配)
+    exclude?: string[];
+  }
 export type Url =
     | string // swagger url
     | [
           string, // swagger url
-          string // swagger url 生成接口所在对应的文件夹名称
+          string, // swagger url 生成接口所在对应的文件夹名称
+          UrlConfig
       ]
     | [
           string, // swagger url
           string, // swagger url 生成接口所在对应的文件夹名称
+          UrlConfig, // 单个接口的tag控制
           SwaggerFetchOptions | undefined // 单个 swagger api url 请求 配置属性
       ];
+    
 
 export interface Options {
     // 额外的导入模块 (字符串形式) 自定义 renderFunction 时可能需要
@@ -22,9 +30,9 @@ export interface Options {
     // 生成的文件名，别名设置，用来自定义文件名，默认将 tag 做文件名
     tagAlias?: TagAlias;
     // 需要生成的接口(使用 tag 来匹配) 优先级大于 exclude
-    include?: RegExp | string[];
+    include?: string[];
     // 不需要生成的接口(使用 tag 来匹配)
-    exclude?: RegExp | string[];
+    exclude?: string[];
     // swagger api 请求 配置属性
     fetchOptions?: SwaggerFetchOptions;
     // swagger urls

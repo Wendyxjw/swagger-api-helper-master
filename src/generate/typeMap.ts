@@ -5,5 +5,6 @@ const typeMap: { [key: string]: any } = {
     boolean: 'boolean',
     file: 'File',
     number: 'number',
+    int: 'number',
 };
 export default typeMap;

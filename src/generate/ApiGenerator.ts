@@ -1,13 +1,14 @@
-import { isRegExp } from 'util';
 import { SwaggerResponse, SwaggerFetchOptions } from '../interfaces';
 import { fetchSwaggerJson, writeFile } from '../utils';
 import parseSwaggerJson from '../parseSwaggerJson';
-import { Options, Url, GenMessage, Status, GenMessageWrapper } from './interfaces';
+import { Options, Url, GenMessage, Status, GenMessageWrapper, UrlConfig } from './interfaces';
 import { join, basename } from 'path';
 import getApiModel from './getApiModel';
 import getInterfacesModel from './getInterfacesModel';
+import getAllInterfaceName from './getAllInterfaceName';
 
-type IUrl = [string, string, SwaggerFetchOptions | undefined];
+
+type IUrl = [string, string, UrlConfig, SwaggerFetchOptions | undefined];
 
 // 生成 存放 swagger model 的文件名
 const interfaceModelsName = 'interfaces';
@@ -25,9 +26,12 @@ class ApiGenerator {
     private parseUrls(urls: Url[], fetchOptions?: SwaggerFetchOptions): IUrl[] {
         return urls.map((url, index) => {
             if (typeof url === 'string') {
-                return [url, `swaggerApi${index}`, fetchOptions];
+                return [url, `swaggerApi${index}`, {}, fetchOptions];
             }
-            return url[2] ? (url as IUrl) : [url[0], url[1], fetchOptions];
+            if (url[2]) {
+                return (url as IUrl);
+            }
+            return url[3] ? (url as IUrl) : [url[0], url[1], url[2], fetchOptions];
         });
     }
 
@@ -35,7 +39,7 @@ class ApiGenerator {
      * 请求 swagger 数据
      */
     async fetch() {
-        const fetchApis = this.urls.map(([url, dirname, currentFetchOptions]) =>
+        const fetchApis = this.urls.map(([url, dirname, config, currentFetchOptions]) =>
             fetchSwaggerJson(url, currentFetchOptions)
         );
         this.swaggerResponses = await Promise.all(fetchApis);
@@ -47,15 +51,18 @@ class ApiGenerator {
      * 生成接口文件
      */
     async generate() {
-        const { tagAlias = {}, outputPath, include, exclude, notRequiredInterfaces} = this.options;
+        const { tagAlias = {}, outputPath, include = [], exclude = [], notRequiredInterfaces } = this.options;
         const messages: GenMessageWrapper[] = [];
         let curIndex = 0;
         for await (const swaggerResponse of this.swaggerResponses) {
             const dirname = this.urls[curIndex][1];
+            const urlConfig = this.urls[curIndex][2];
+
             const { swaggerObj, basePath, definitions } = parseSwaggerJson(swaggerResponse);
+            const allInterfaceName = getAllInterfaceName(definitions)
             const includeKeys = Object.keys(swaggerObj)
                 .map(key => key.trim())
-                .filter(key => swaggerObjFilter(key, include, exclude));
+                .filter(key => swaggerObjFilter(key, [...include, ...(urlConfig?.include || [])], [...exclude, ...(urlConfig?.exclude || [])]));
             const { apiModelPromises, globalInterfaceNamesSet } = includeKeys.reduce<{
                 apiModelPromises: Promise<GenMessage>[];
                 globalInterfaceNamesSet: Set<string>;
@@ -69,7 +76,8 @@ class ApiGenerator {
                         basePath,
                         filename,
                         this.options,
-                        dirname
+                        dirname,
+                        allInterfaceName
                     );
                     target.apiModelPromises.push(genFile(filename, content));
                     relatedInterfaceNames.forEach(name => target.globalInterfaceNamesSet.add(name));
@@ -106,12 +114,12 @@ export default ApiGenerator;
  * @param include 需要生成的 tag 优先级大于 exclude
  * @param exclude 不需要生成的 tag
  */
-function swaggerObjFilter(key: string, include?: RegExp | string[], exclude?: RegExp | string[]) {
-    const isMatch = (pattern?: RegExp | string[]) => {
-        if (isRegExp(pattern)) {
-            return pattern.test(key);
-        }
+function swaggerObjFilter(key: string, include?: string[], exclude?: string[]) {
+    const isMatch = (pattern?:string[]) => {
         if (Array.isArray(pattern)) {
+            if(pattern.length === 0){
+                return undefined;
+            }
             return pattern.includes(key);
         }
     };

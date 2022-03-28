@@ -28,7 +28,7 @@ export default ({
     //     console.log(responseType)
     // }
     return `
-export function ${name}(${renderArgs(payloadType)}) {${paramsString}
+export function ${name} (${renderArgs(payloadType)}) {${paramsString}
   return request<${responseType}>({
     url: \`${dirname}${fullUrl}${hasQuery ? '?${stringify(query)}' : ''}\`,
     method: '${method}',${hasBody ? '\n    data: body,' : ''}
@@ -74,6 +74,6 @@ function renderParams({
     ];
     const paramsString = `{ ${allPara.join(', ')}, ...${extraFetchOptionsParaName} }`;
     return `\n  const ${
-        allPara.length === 0 ? extraFetchOptionsParaName : paramsString
+      allPara.length === 0 ? extraFetchOptionsParaName : paramsString
     } = payload;`;
 }

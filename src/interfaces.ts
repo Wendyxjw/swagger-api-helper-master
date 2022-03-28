@@ -8,6 +8,7 @@ export const enum Type {
     any = 'any',
     boolean = 'boolean',
     file = 'file',
+    int = 'number',
 }
 
 // swagger tag
