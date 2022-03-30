@@ -264,7 +264,7 @@ ${description ? `@description ${description}` : ''}
         if (parametersInFormData.length > 0) {
             payloadContent.push({
                 name: ParaPayloadName.body,
-                typeName: 'FormData',
+                typeName: 'any',
                 description: `${renderInterface(
                     parametersInFormData,
                     'FormContent',
