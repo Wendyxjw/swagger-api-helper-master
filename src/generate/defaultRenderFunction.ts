@@ -35,6 +35,7 @@ export function ${name} (${renderArgs(payloadType)}) {${paramsString}
     ${paramsString ? `...${extraFetchOptionsParaName},` : ''}
   });
 }
+${name}.cacheKey = nanoid();
 `;
 };
 
