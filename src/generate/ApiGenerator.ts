@@ -29,7 +29,7 @@ class ApiGenerator {
                 return [url, `swaggerApi${index}`, {}, fetchOptions];
             }
             if (url[2]) {
-                return (url as IUrl);
+                return [...url, fetchOptions] as IUrl;
             }
             return url[3] ? (url as IUrl) : [url[0], url[1], url[2], fetchOptions];
         });
