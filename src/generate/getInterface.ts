@@ -1,5 +1,5 @@
 import renderRefModelTitle from './getRefModelTitle';
-import { isEnum } from './isTypes';
+import { isEnum, isLong } from './isTypes';
 import typeMap from './typeMap';
 import { Schema, Properties, Type } from '../interfaces';
 import { CommentType, InterfaceModel } from './interfaces';
@@ -55,9 +55,14 @@ export default (schema: Schema, commentType: CommentType, level = 1, notRequired
                 return getFullType(properties);
             case Type.string:
                 if (isEnum(schema)) return schema.enum!.map(item => `'${item}'`).join(' | ');
+            case Type.integer:
+                if(isLong({type:schema.type, format:schema.format})){
+                    return typeMap.string
+                }else{
+                    return typeMap[type!];
+                }
             case Type.int:
             case Type.boolean:
-            case Type.integer:
             case Type.file:
             default:
                 return typeMap[type!];
